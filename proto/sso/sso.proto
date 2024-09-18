@@ -21,7 +21,7 @@ message RegisterRequest {
 
 message RegisterResponse {
     int64 user_id = 1;
-    string msg = 2;
+    string activation_token = 2;
 }
 
 message LoginRequest {
@@ -55,7 +55,7 @@ message GetOrCreateAppResponse {
 }
 
 message ActivateUserRequest {
-    int64 user_id = 1;
+    string activation_token = 1;
 }
 
 message ActivateUserResponse {
