@@ -10,7 +10,18 @@ service Auth {
     rpc IsAdmin (IsAdminRequest) returns (IsAdminResponse);
     rpc GetOrCreateApp (GetOrCreateAppRequest) returns (GetOrCreateAppResponse);
     rpc ActivateUser (ActivateUserRequest) returns (ActivateUserResponse);
-    rpc GetAccessToken (GetAccessTokenRequest) returns (GetAccessTokenResponse);
+    rpc RenewAccessToken (RenewAccessTokenRequest) returns (RenewAccessTokenResponse);
+    rpc GetUser (GetUserRequest) returns (GetUserResponse);
+}
+
+message User {
+    int64 id = 1;
+    string username = 2;
+    string email = 3;
+    string role = 4;
+    bool is_active = 5;
+    string created_at = 6;
+    string updated_at = 7;
 }
 
 message RegisterRequest {
@@ -59,14 +70,24 @@ message ActivateUserRequest {
 }
 
 message ActivateUserResponse {
-    bool activated = 1;
+    User user = 1;
 }
 
-message GetAccessTokenRequest {
+message RenewAccessTokenRequest {
     int32 app_id = 1;
     string refresh_token = 2;
 }
 
-message GetAccessTokenResponse {
+message RenewAccessTokenResponse {
     string access_token = 1;
+}
+
+message GetUserRequest {
+    int64 id = 1;
+    string email = 2;
+    bool is_active = 3;
+}
+
+message GetUserResponse {
+    User user = 1;
 }
