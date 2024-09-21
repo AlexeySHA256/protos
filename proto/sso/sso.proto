@@ -12,6 +12,7 @@ service Auth {
     rpc ActivateUser (ActivateUserRequest) returns (ActivateUserResponse);
     rpc RenewAccessToken (RenewAccessTokenRequest) returns (RenewAccessTokenResponse);
     rpc GetUser (GetUserRequest) returns (GetUserResponse);
+    rpc NewActivationToken (NewActivationTokenRequest) returns (NewActivationTokenResponse);
 }
 
 message User {
@@ -90,4 +91,12 @@ message GetUserRequest {
 
 message GetUserResponse {
     User user = 1;
+}
+
+message NewActivationTokenRequest {
+    string email = 1;
+}
+
+message NewActivationTokenResponse {
+    string activation_token = 1;
 }
