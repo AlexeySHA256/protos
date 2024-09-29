@@ -27,6 +27,7 @@ const (
 	Auth_RenewAccessToken_FullMethodName   = "/auth.Auth/RenewAccessToken"
 	Auth_GetUser_FullMethodName            = "/auth.Auth/GetUser"
 	Auth_NewActivationToken_FullMethodName = "/auth.Auth/NewActivationToken"
+	Auth_VerifyToken_FullMethodName        = "/auth.Auth/VerifyToken"
 )
 
 // AuthClient is the client API for Auth service.
@@ -41,6 +42,7 @@ type AuthClient interface {
 	RenewAccessToken(ctx context.Context, in *RenewAccessTokenRequest, opts ...grpc.CallOption) (*RenewAccessTokenResponse, error)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
 	NewActivationToken(ctx context.Context, in *NewActivationTokenRequest, opts ...grpc.CallOption) (*NewActivationTokenResponse, error)
+	VerifyToken(ctx context.Context, in *VerifyTokenRequest, opts ...grpc.CallOption) (*VerifyTokenResponse, error)
 }
 
 type authClient struct {
@@ -131,6 +133,16 @@ func (c *authClient) NewActivationToken(ctx context.Context, in *NewActivationTo
 	return out, nil
 }
 
+func (c *authClient) VerifyToken(ctx context.Context, in *VerifyTokenRequest, opts ...grpc.CallOption) (*VerifyTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VerifyTokenResponse)
+	err := c.cc.Invoke(ctx, Auth_VerifyToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServer is the server API for Auth service.
 // All implementations must embed UnimplementedAuthServer
 // for forward compatibility.
@@ -143,6 +155,7 @@ type AuthServer interface {
 	RenewAccessToken(context.Context, *RenewAccessTokenRequest) (*RenewAccessTokenResponse, error)
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
 	NewActivationToken(context.Context, *NewActivationTokenRequest) (*NewActivationTokenResponse, error)
+	VerifyToken(context.Context, *VerifyTokenRequest) (*VerifyTokenResponse, error)
 	mustEmbedUnimplementedAuthServer()
 }
 
@@ -176,6 +189,9 @@ func (UnimplementedAuthServer) GetUser(context.Context, *GetUserRequest) (*GetUs
 }
 func (UnimplementedAuthServer) NewActivationToken(context.Context, *NewActivationTokenRequest) (*NewActivationTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewActivationToken not implemented")
+}
+func (UnimplementedAuthServer) VerifyToken(context.Context, *VerifyTokenRequest) (*VerifyTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyToken not implemented")
 }
 func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}
 func (UnimplementedAuthServer) testEmbeddedByValue()              {}
@@ -342,6 +358,24 @@ func _Auth_NewActivationToken_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Auth_VerifyToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).VerifyToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Auth_VerifyToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).VerifyToken(ctx, req.(*VerifyTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Auth_ServiceDesc is the grpc.ServiceDesc for Auth service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -380,6 +414,10 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "NewActivationToken",
 			Handler:    _Auth_NewActivationToken_Handler,
+		},
+		{
+			MethodName: "VerifyToken",
+			Handler:    _Auth_VerifyToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

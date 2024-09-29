@@ -13,6 +13,7 @@ service Auth {
     rpc RenewAccessToken (RenewAccessTokenRequest) returns (RenewAccessTokenResponse);
     rpc GetUser (GetUserRequest) returns (GetUserResponse);
     rpc NewActivationToken (NewActivationTokenRequest) returns (NewActivationTokenResponse);
+    rpc VerifyToken (VerifyTokenRequest) returns (VerifyTokenResponse);
 }
 
 message User {
@@ -99,4 +100,13 @@ message NewActivationTokenRequest {
 
 message NewActivationTokenResponse {
     string activation_token = 1;
+}
+
+message VerifyTokenRequest {
+    string token = 1;
+    int32 app_id = 2;
+}
+
+message VerifyTokenResponse {
+    bool is_valid = 1;
 }
