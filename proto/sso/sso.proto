@@ -30,6 +30,7 @@ message RegisterRequest {
     string email = 1;
     string username = 2;
     string password = 3;
+    int32 app_id = 4;
 }
 
 message RegisterResponse {
@@ -69,6 +70,7 @@ message GetOrCreateAppResponse {
 
 message ActivateUserRequest {
     string activation_token = 1;
+    int32 app_id = 2;
 }
 
 message ActivateUserResponse {
@@ -96,6 +98,7 @@ message GetUserResponse {
 
 message NewActivationTokenRequest {
     string email = 1;
+    int32 app_id = 2;
 }
 
 message NewActivationTokenResponse {
