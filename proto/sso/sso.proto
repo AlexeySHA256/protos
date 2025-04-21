@@ -4,147 +4,142 @@ package auth;
 
 option go_package = "protos.sso.v1;ssov1";
 
+service Health { rpc Check(HealthCheckRequest) returns (HealthCheckResponse); }
+
+message HealthCheckRequest {}
+
+message HealthCheckResponse { string status = 1; }
+
 service Auth {
-    rpc Register (RegisterRequest) returns (RegisterResponse);
-    rpc Login (LoginRequest) returns (LoginResponse);
-    rpc IsAdmin (IsAdminRequest) returns (IsAdminResponse);
-    rpc GetOrCreateApp (GetOrCreateAppRequest) returns (GetOrCreateAppResponse);
-    rpc ActivateUser (ActivateUserRequest) returns (ActivateUserResponse);
-    rpc RenewAccessToken (RenewAccessTokenRequest) returns (RenewAccessTokenResponse);
-    rpc GetUser (GetUserRequest) returns (GetUserResponse);
-    rpc NewActivationToken (NewActivationTokenRequest) returns (NewActivationTokenResponse);
-    rpc VerifyToken (VerifyTokenRequest) returns (VerifyTokenResponse);
-    rpc CreatePermission (CreatePermissionRequest) returns (CreatePermissionResponse);
-    rpc CheckPermission (CheckPermissionRequest) returns (CheckPermissionResponse);
-    rpc GrantPermissions (GrantPermissionsRequest) returns (GrantPermissionsResponse);
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc IsAdmin(IsAdminRequest) returns (IsAdminResponse);
+  rpc GetOrCreateApp(GetOrCreateAppRequest) returns (GetOrCreateAppResponse);
+  rpc ActivateUser(ActivateUserRequest) returns (ActivateUserResponse);
+  rpc RenewAccessToken(RenewAccessTokenRequest)
+      returns (RenewAccessTokenResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc NewActivationToken(NewActivationTokenRequest)
+      returns (NewActivationTokenResponse);
+  rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse);
+}
+
+service Permissions {
+  rpc CreatePermission(CreatePermissionRequest)
+      returns (CreatePermissionResponse);
+  rpc CheckPermission(CheckPermissionRequest) returns (CheckPermissionResponse);
+  rpc GrantPermissions(GrantPermissionsRequest)
+      returns (GrantPermissionsResponse);
 }
 
 message User {
-    int64 id = 1;
-    string username = 2;
-    string email = 3;
-    string role = 4;
-    bool is_active = 5;
-    string created_at = 6;
-    string updated_at = 7;
+  int64 id = 1;
+  string username = 2;
+  string email = 3;
+  string role = 4;
+  bool is_active = 5;
+  string created_at = 6;
+  string updated_at = 7;
 }
 
 message Permission {
-    int64 id = 1;
-    string code = 2;
+  int64 id = 1;
+  string code = 2;
 }
 
 message RegisterRequest {
-    string email = 1;
-    string username = 2;
-    string password = 3;
-    int32 app_id = 4;
+  string email = 1;
+  string username = 2;
+  string password = 3;
+  int32 app_id = 4;
 }
 
 message RegisterResponse {
-    int64 user_id = 1;
-    string activation_token = 2;
+  int64 user_id = 1;
+  string activation_token = 2;
 }
 
 message LoginRequest {
-    string email = 1;
-    string password = 2;
-    int32 app_id = 3;
+  string email = 1;
+  string password = 2;
+  int32 app_id = 3;
 }
 
 message LoginResponse {
-    string access_token = 1;
-    string refresh_token = 2;
+  string access_token = 1;
+  string refresh_token = 2;
 }
 
-message IsAdminRequest {
-    int64 user_id = 1;
-}
+message IsAdminRequest { int64 user_id = 1; }
 
-message IsAdminResponse {
-    bool is_admin = 1;
-}
+message IsAdminResponse { bool is_admin = 1; }
 
 message GetOrCreateAppRequest {
-    string name = 1;
-    string description = 2;
-    string secret = 3;
+  string name = 1;
+  string description = 2;
+  string secret = 3;
 }
 
 message GetOrCreateAppResponse {
-    int64 id = 1;
-    bool created = 2;
+  int64 id = 1;
+  bool created = 2;
 }
 
 message ActivateUserRequest {
-    string activation_token = 1;
-    int32 app_id = 2;
+  string activation_token = 1;
+  int32 app_id = 2;
 }
 
-message ActivateUserResponse {
-    User user = 1;
-}
+message ActivateUserResponse { User user = 1; }
 
 message RenewAccessTokenRequest {
-    int32 app_id = 1;
-    string refresh_token = 2;
+  int32 app_id = 1;
+  string refresh_token = 2;
 }
 
-message RenewAccessTokenResponse {
-    string access_token = 1;
-}
+message RenewAccessTokenResponse { string access_token = 1; }
 
 message GetUserRequest {
-    int64 id = 1;
-    string email = 2;
-    bool is_active = 3;
+  int64 id = 1;
+  string email = 2;
+  bool is_active = 3;
 }
 
-message GetUserResponse {
-    User user = 1;
-}
+message GetUserResponse { User user = 1; }
 
 message NewActivationTokenRequest {
-    string email = 1;
-    int32 app_id = 2;
+  string email = 1;
+  int32 app_id = 2;
 }
 
-message NewActivationTokenResponse {
-    string activation_token = 1;
-}
+message NewActivationTokenResponse { string activation_token = 1; }
 
 message VerifyTokenRequest {
-    string token = 1;
-    int32 app_id = 2;
+  string token = 1;
+  int32 app_id = 2;
 }
 
-message VerifyTokenResponse {
-    bool is_valid = 1;
-}
+message VerifyTokenResponse { bool is_valid = 1; }
 
-message CreatePermissionRequest {
-    string code = 1;
-}
+message CreatePermissionRequest { string code = 1; }
 
 message CreatePermissionResponse {
-    bool created = 1;
-    Permission permission = 2;
+  bool created = 1;
+  Permission permission = 2;
 }
 
 message CheckPermissionRequest {
-    int64 user_id = 1;
-    string permission_code = 2;
+  int64 user_id = 1;
+  string permission_code = 2;
 }
 
-message CheckPermissionResponse {
-    bool has_permission = 1;
-}
+message CheckPermissionResponse { bool has_permission = 1; }
 
 message GrantPermissionsRequest {
-    int64 user_id = 1;
-    repeated string permission_codes = 2;
+  int64 user_id = 1;
+  repeated string permission_codes = 2;
 }
 
 message GrantPermissionsResponse {
-    bool granted = 1;
+  repeated Permission granted_permissions = 1;
 }
