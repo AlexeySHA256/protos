@@ -14,7 +14,6 @@ service Auth {
   rpc Register(RegisterRequest) returns (RegisterResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
   rpc IsAdmin(IsAdminRequest) returns (IsAdminResponse);
-  rpc GetOrCreateApp(GetOrCreateAppRequest) returns (GetOrCreateAppResponse);
   rpc ActivateUser(ActivateUserRequest) returns (ActivateUserResponse);
   rpc RenewAccessToken(RenewAccessTokenRequest)
       returns (RenewAccessTokenResponse);
@@ -24,9 +23,11 @@ service Auth {
   rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse);
 }
 
+service Apps {
+  rpc GetOrCreateApp(GetOrCreateAppRequest) returns (GetOrCreateAppResponse);
+}
+
 service Permissions {
-  rpc CreatePermission(CreatePermissionRequest)
-      returns (CreatePermissionResponse);
   rpc CheckPermission(CheckPermissionRequest) returns (CheckPermissionResponse);
   rpc GrantPermissions(GrantPermissionsRequest)
       returns (GrantPermissionsResponse);
@@ -120,13 +121,6 @@ message VerifyTokenRequest {
 }
 
 message VerifyTokenResponse { bool is_valid = 1; }
-
-message CreatePermissionRequest { string code = 1; }
-
-message CreatePermissionResponse {
-  bool created = 1;
-  Permission permission = 2;
-}
 
 message CheckPermissionRequest {
   int64 user_id = 1;

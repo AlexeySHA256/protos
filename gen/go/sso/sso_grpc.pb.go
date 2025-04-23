@@ -124,7 +124,6 @@ const (
 	Auth_Register_FullMethodName           = "/auth.Auth/Register"
 	Auth_Login_FullMethodName              = "/auth.Auth/Login"
 	Auth_IsAdmin_FullMethodName            = "/auth.Auth/IsAdmin"
-	Auth_GetOrCreateApp_FullMethodName     = "/auth.Auth/GetOrCreateApp"
 	Auth_ActivateUser_FullMethodName       = "/auth.Auth/ActivateUser"
 	Auth_RenewAccessToken_FullMethodName   = "/auth.Auth/RenewAccessToken"
 	Auth_GetUser_FullMethodName            = "/auth.Auth/GetUser"
@@ -139,7 +138,6 @@ type AuthClient interface {
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	IsAdmin(ctx context.Context, in *IsAdminRequest, opts ...grpc.CallOption) (*IsAdminResponse, error)
-	GetOrCreateApp(ctx context.Context, in *GetOrCreateAppRequest, opts ...grpc.CallOption) (*GetOrCreateAppResponse, error)
 	ActivateUser(ctx context.Context, in *ActivateUserRequest, opts ...grpc.CallOption) (*ActivateUserResponse, error)
 	RenewAccessToken(ctx context.Context, in *RenewAccessTokenRequest, opts ...grpc.CallOption) (*RenewAccessTokenResponse, error)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
@@ -179,16 +177,6 @@ func (c *authClient) IsAdmin(ctx context.Context, in *IsAdminRequest, opts ...gr
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(IsAdminResponse)
 	err := c.cc.Invoke(ctx, Auth_IsAdmin_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *authClient) GetOrCreateApp(ctx context.Context, in *GetOrCreateAppRequest, opts ...grpc.CallOption) (*GetOrCreateAppResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetOrCreateAppResponse)
-	err := c.cc.Invoke(ctx, Auth_GetOrCreateApp_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -252,7 +240,6 @@ type AuthServer interface {
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	IsAdmin(context.Context, *IsAdminRequest) (*IsAdminResponse, error)
-	GetOrCreateApp(context.Context, *GetOrCreateAppRequest) (*GetOrCreateAppResponse, error)
 	ActivateUser(context.Context, *ActivateUserRequest) (*ActivateUserResponse, error)
 	RenewAccessToken(context.Context, *RenewAccessTokenRequest) (*RenewAccessTokenResponse, error)
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
@@ -276,9 +263,6 @@ func (UnimplementedAuthServer) Login(context.Context, *LoginRequest) (*LoginResp
 }
 func (UnimplementedAuthServer) IsAdmin(context.Context, *IsAdminRequest) (*IsAdminResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsAdmin not implemented")
-}
-func (UnimplementedAuthServer) GetOrCreateApp(context.Context, *GetOrCreateAppRequest) (*GetOrCreateAppResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetOrCreateApp not implemented")
 }
 func (UnimplementedAuthServer) ActivateUser(context.Context, *ActivateUserRequest) (*ActivateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ActivateUser not implemented")
@@ -366,24 +350,6 @@ func _Auth_IsAdmin_Handler(srv interface{}, ctx context.Context, dec func(interf
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServer).IsAdmin(ctx, req.(*IsAdminRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Auth_GetOrCreateApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetOrCreateAppRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServer).GetOrCreateApp(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Auth_GetOrCreateApp_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).GetOrCreateApp(ctx, req.(*GetOrCreateAppRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -498,10 +464,6 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Auth_IsAdmin_Handler,
 		},
 		{
-			MethodName: "GetOrCreateApp",
-			Handler:    _Auth_GetOrCreateApp_Handler,
-		},
-		{
 			MethodName: "ActivateUser",
 			Handler:    _Auth_ActivateUser_Handler,
 		},
@@ -527,7 +489,108 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	Permissions_CreatePermission_FullMethodName = "/auth.Permissions/CreatePermission"
+	Apps_GetOrCreateApp_FullMethodName = "/auth.Apps/GetOrCreateApp"
+)
+
+// AppsClient is the client API for Apps service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type AppsClient interface {
+	GetOrCreateApp(ctx context.Context, in *GetOrCreateAppRequest, opts ...grpc.CallOption) (*GetOrCreateAppResponse, error)
+}
+
+type appsClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewAppsClient(cc grpc.ClientConnInterface) AppsClient {
+	return &appsClient{cc}
+}
+
+func (c *appsClient) GetOrCreateApp(ctx context.Context, in *GetOrCreateAppRequest, opts ...grpc.CallOption) (*GetOrCreateAppResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetOrCreateAppResponse)
+	err := c.cc.Invoke(ctx, Apps_GetOrCreateApp_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// AppsServer is the server API for Apps service.
+// All implementations must embed UnimplementedAppsServer
+// for forward compatibility.
+type AppsServer interface {
+	GetOrCreateApp(context.Context, *GetOrCreateAppRequest) (*GetOrCreateAppResponse, error)
+	mustEmbedUnimplementedAppsServer()
+}
+
+// UnimplementedAppsServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedAppsServer struct{}
+
+func (UnimplementedAppsServer) GetOrCreateApp(context.Context, *GetOrCreateAppRequest) (*GetOrCreateAppResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOrCreateApp not implemented")
+}
+func (UnimplementedAppsServer) mustEmbedUnimplementedAppsServer() {}
+func (UnimplementedAppsServer) testEmbeddedByValue()              {}
+
+// UnsafeAppsServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to AppsServer will
+// result in compilation errors.
+type UnsafeAppsServer interface {
+	mustEmbedUnimplementedAppsServer()
+}
+
+func RegisterAppsServer(s grpc.ServiceRegistrar, srv AppsServer) {
+	// If the following call pancis, it indicates UnimplementedAppsServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&Apps_ServiceDesc, srv)
+}
+
+func _Apps_GetOrCreateApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetOrCreateAppRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppsServer).GetOrCreateApp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Apps_GetOrCreateApp_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppsServer).GetOrCreateApp(ctx, req.(*GetOrCreateAppRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Apps_ServiceDesc is the grpc.ServiceDesc for Apps service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Apps_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "auth.Apps",
+	HandlerType: (*AppsServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetOrCreateApp",
+			Handler:    _Apps_GetOrCreateApp_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "sso/sso.proto",
+}
+
+const (
 	Permissions_CheckPermission_FullMethodName  = "/auth.Permissions/CheckPermission"
 	Permissions_GrantPermissions_FullMethodName = "/auth.Permissions/GrantPermissions"
 )
@@ -536,7 +599,6 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PermissionsClient interface {
-	CreatePermission(ctx context.Context, in *CreatePermissionRequest, opts ...grpc.CallOption) (*CreatePermissionResponse, error)
 	CheckPermission(ctx context.Context, in *CheckPermissionRequest, opts ...grpc.CallOption) (*CheckPermissionResponse, error)
 	GrantPermissions(ctx context.Context, in *GrantPermissionsRequest, opts ...grpc.CallOption) (*GrantPermissionsResponse, error)
 }
@@ -547,16 +609,6 @@ type permissionsClient struct {
 
 func NewPermissionsClient(cc grpc.ClientConnInterface) PermissionsClient {
 	return &permissionsClient{cc}
-}
-
-func (c *permissionsClient) CreatePermission(ctx context.Context, in *CreatePermissionRequest, opts ...grpc.CallOption) (*CreatePermissionResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreatePermissionResponse)
-	err := c.cc.Invoke(ctx, Permissions_CreatePermission_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *permissionsClient) CheckPermission(ctx context.Context, in *CheckPermissionRequest, opts ...grpc.CallOption) (*CheckPermissionResponse, error) {
@@ -583,7 +635,6 @@ func (c *permissionsClient) GrantPermissions(ctx context.Context, in *GrantPermi
 // All implementations must embed UnimplementedPermissionsServer
 // for forward compatibility.
 type PermissionsServer interface {
-	CreatePermission(context.Context, *CreatePermissionRequest) (*CreatePermissionResponse, error)
 	CheckPermission(context.Context, *CheckPermissionRequest) (*CheckPermissionResponse, error)
 	GrantPermissions(context.Context, *GrantPermissionsRequest) (*GrantPermissionsResponse, error)
 	mustEmbedUnimplementedPermissionsServer()
@@ -596,9 +647,6 @@ type PermissionsServer interface {
 // pointer dereference when methods are called.
 type UnimplementedPermissionsServer struct{}
 
-func (UnimplementedPermissionsServer) CreatePermission(context.Context, *CreatePermissionRequest) (*CreatePermissionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreatePermission not implemented")
-}
 func (UnimplementedPermissionsServer) CheckPermission(context.Context, *CheckPermissionRequest) (*CheckPermissionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckPermission not implemented")
 }
@@ -624,24 +672,6 @@ func RegisterPermissionsServer(s grpc.ServiceRegistrar, srv PermissionsServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&Permissions_ServiceDesc, srv)
-}
-
-func _Permissions_CreatePermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreatePermissionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PermissionsServer).CreatePermission(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Permissions_CreatePermission_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PermissionsServer).CreatePermission(ctx, req.(*CreatePermissionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _Permissions_CheckPermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -687,10 +717,6 @@ var Permissions_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "auth.Permissions",
 	HandlerType: (*PermissionsServer)(nil),
 	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "CreatePermission",
-			Handler:    _Permissions_CreatePermission_Handler,
-		},
 		{
 			MethodName: "CheckPermission",
 			Handler:    _Permissions_CheckPermission_Handler,
