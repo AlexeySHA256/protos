@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package sso;
+
+service Permissions {
+  rpc CheckPermission(CheckPermissionRequest) returns (CheckPermissionResponse);
+  rpc GrantPermissions(GrantPermissionsRequest)
+      returns (GrantPermissionsResponse);
+}
+
+message Permission {
+  int64 id = 1;
+  string code = 2;
+}
+
+message CheckPermissionRequest {
+  int64 user_id = 1;
+  string permission_code = 2;
+}
+
+message CheckPermissionResponse { bool has_permission = 1; }
+
+message GrantPermissionsRequest {
+  int64 user_id = 1;
+  repeated string permission_codes = 2;
+}
+
+message GrantPermissionsResponse {
+  repeated Permission granted_permissions = 1;
+}
